@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #322b2b;
+  background: #fff8f1;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 241, 0.96), rgba(255, 244, 234, 0.88)),
+    radial-gradient(circle at 14% 12%, rgba(250, 218, 221, 0.5), transparent 24rem),
+    radial-gradient(circle at 88% 4%, rgba(199, 183, 255, 0.28), transparent 22rem);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  color: #ffffff;
+  background: #f9735b;
+}
+
+@layer components {
+  .pastel-page {
+    @apply min-h-screen bg-[#FFF8F1] text-[#322B2B];
+  }
+
+  .pastel-card {
+    @apply rounded-[1.75rem] border border-[#EBDDD3] bg-[#FFFDF9] shadow-[0_18px_44px_rgba(104,74,57,0.08)];
+  }
+
+  .pastel-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-[#D9654F] px-5 py-3 font-bold text-white shadow-[0_12px_24px_rgba(217,101,79,0.2)] transition hover:-translate-y-0.5 hover:bg-[#C95743] disabled:translate-y-0 disabled:opacity-60;
+  }
+
+  .pastel-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-[#E2C8B7] bg-[#FFFDF9] px-5 py-3 font-bold text-[#6B4A35] transition hover:-translate-y-0.5 hover:bg-[#FFF4EA];
+  }
+}

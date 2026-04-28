@@ -1,0 +1,14 @@
+node_modules
+dist
+.vite
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+backend/.env
+frontend/.env
+backend/app.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+.DS_Store
+*.log
