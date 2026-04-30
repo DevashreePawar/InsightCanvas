@@ -6,7 +6,7 @@ from typing import Any
 
 from openai import OpenAI
 
-from app.config import OPENAI_API_KEY
+from app.config import ENABLE_RAG_EMBEDDINGS, OPENAI_API_KEY
 from app.database import get_db
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def _cosine(a: list[float], b: list[float]) -> float:
 
 
 def _embed(text: str) -> list[float] | None:
-    if not OPENAI_API_KEY:
+    if not OPENAI_API_KEY or not ENABLE_RAG_EMBEDDINGS:
         return None
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)
@@ -81,7 +81,7 @@ def build_dataset_chunks(profile: dict) -> list[dict]:
 
 def index_dataset_context(dataset_id: str, profile: dict) -> None:
     chunks = build_dataset_chunks(profile)
-    embeddings_available = bool(OPENAI_API_KEY)
+    embeddings_available = bool(OPENAI_API_KEY and ENABLE_RAG_EMBEDDINGS)
     with get_db() as db:
         db.execute("DELETE FROM rag_chunks WHERE dataset_id = ?", (dataset_id,))
         for item in chunks:

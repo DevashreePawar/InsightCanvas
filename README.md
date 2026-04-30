@@ -82,8 +82,11 @@ SECRET_KEY=replace-with-a-long-random-string
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
 USE_LANGCHAIN=true
+ENABLE_RAG_EMBEDDINGS=false
 FRONTEND_ORIGIN=http://localhost:5174
-MAX_UPLOAD_BYTES=104857600
+MAX_UPLOAD_BYTES=26214400
+MAX_ANALYSIS_ROWS=25000
+MAX_CHART_ROWS=5000
 ```
 
 ### Frontend
@@ -118,8 +121,11 @@ Deploy order:
 ```text
 OPENAI_API_KEY=your-openai-key
 OPENAI_MODEL=gpt-4o-mini
-USE_LANGCHAIN=true
-MAX_UPLOAD_BYTES=104857600
+USE_LANGCHAIN=false
+ENABLE_RAG_EMBEDDINGS=false
+MAX_UPLOAD_BYTES=10485760
+MAX_ANALYSIS_ROWS=25000
+MAX_CHART_ROWS=5000
 FRONTEND_ORIGIN=https://your-vercel-url.vercel.app
 ```
 
@@ -190,6 +196,8 @@ When `OPENAI_API_KEY` is configured and `USE_LANGCHAIN=true`, the backend uses L
 - using retrieved dataset context to improve semantic matching
 
 LangChain does not replace Pandas or Plotly. Pandas still performs the actual profiling, cleaning, grouping, aggregation, and statistics, while Plotly generates the visualizations. If LangChain is unavailable or an API call fails, InsightCanvas falls back to the existing deterministic planner and raw OpenAI fallback path.
+
+For free Render deployments, `USE_LANGCHAIN=false` and `ENABLE_RAG_EMBEDDINGS=false` are recommended to keep memory usage low. The app still uses the deterministic analyst pipeline and OpenAI fallback logic when configured.
 
 ## EDA Analyst Layer
 

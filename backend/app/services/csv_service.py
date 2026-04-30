@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from fastapi import HTTPException, UploadFile
 
-from app.config import MAX_UPLOAD_BYTES, UPLOAD_DIR
+from app.config import MAX_ANALYSIS_ROWS, MAX_UPLOAD_BYTES, UPLOAD_DIR
 
 DATASET_REGISTRY = {}
 SUPPORTED_EXTENSIONS = {".csv", ".xlsx", ".xls", ".json"}
@@ -55,10 +55,24 @@ def _safe_dataset_id() -> str:
     return str(uuid.uuid4())
 
 
+def _limit_dataframe(df: pd.DataFrame, metadata: dict, original_row_count: int | None = None) -> tuple[pd.DataFrame, dict]:
+    if len(df) <= MAX_ANALYSIS_ROWS:
+        metadata["analysis_limited"] = False
+        metadata["analysis_row_count"] = int(len(df))
+        metadata["original_row_count"] = int(original_row_count if original_row_count is not None else len(df))
+        return df, metadata
+
+    limited = df.head(MAX_ANALYSIS_ROWS).copy()
+    metadata["analysis_limited"] = True
+    metadata["analysis_row_count"] = int(len(limited))
+    metadata["original_row_count"] = int(original_row_count if original_row_count is not None else len(df))
+    return limited, metadata
+
+
 def read_csv_robust(path: Path) -> pd.DataFrame:
     for encoding in ("utf-8", "utf-8-sig", "latin-1"):
         try:
-            return pd.read_csv(path, sep=None, engine="python", encoding=encoding)
+            return pd.read_csv(path, sep=None, engine="python", encoding=encoding, nrows=MAX_ANALYSIS_ROWS + 1)
         except UnicodeDecodeError:
             continue
         except pd.errors.ParserError as exc:
@@ -84,7 +98,7 @@ def read_excel_robust(path: Path) -> tuple[pd.DataFrame, str | None]:
     try:
         excel = pd.ExcelFile(path)
         sheet_name = excel.sheet_names[0]
-        return pd.read_excel(excel, sheet_name=sheet_name), sheet_name
+        return pd.read_excel(excel, sheet_name=sheet_name, nrows=MAX_ANALYSIS_ROWS + 1), sheet_name
     except ImportError as exc:
         raise HTTPException(status_code=500, detail="Excel support requires openpyxl/xlrd. Install backend requirements again.") from exc
     except ValueError as exc:
@@ -94,12 +108,12 @@ def read_excel_robust(path: Path) -> tuple[pd.DataFrame, str | None]:
 def read_dataset_file(path: Path) -> tuple[pd.DataFrame, dict]:
     suffix = path.suffix.lower()
     if suffix == ".csv":
-        return read_csv_robust(path), {"file_type": "csv"}
+        return _limit_dataframe(read_csv_robust(path), {"file_type": "csv"})
     if suffix == ".json":
-        return read_json_robust(path), {"file_type": "json"}
+        return _limit_dataframe(read_json_robust(path), {"file_type": "json"})
     if suffix in {".xlsx", ".xls"}:
         df, sheet_name = read_excel_robust(path)
-        return df, {"file_type": "excel", "sheet_name": sheet_name}
+        return _limit_dataframe(df, {"file_type": "excel", "sheet_name": sheet_name})
     raise HTTPException(status_code=400, detail="Unsupported file type. Upload CSV, Excel, or JSON.")
 
 
@@ -135,7 +149,8 @@ def register_sample(name: str) -> tuple[str, pd.DataFrame, dict]:
         raise HTTPException(status_code=404, detail="Sample dataset not found.")
     dataset_id = _safe_dataset_id()
     DATASET_REGISTRY[dataset_id] = {"sample": key, "filename": f"{key}.csv", "source": "sample"}
-    return dataset_id, SAMPLE_DATASETS[key].copy(), {"filename": f"{key}.csv", "source": "sample", "file_type": "csv"}
+    df, metadata = _limit_dataframe(SAMPLE_DATASETS[key].copy(), {"filename": f"{key}.csv", "source": "sample", "file_type": "csv"})
+    return dataset_id, df, metadata
 
 
 def get_dataset(dataset_id: str) -> pd.DataFrame:
@@ -157,4 +172,7 @@ def get_dataset_metadata(dataset_id: str) -> dict:
         "source": entry.get("source", "upload"),
         "file_type": entry.get("file_type", "csv"),
         "sheet_name": entry.get("sheet_name"),
+        "analysis_limited": entry.get("analysis_limited", False),
+        "analysis_row_count": entry.get("analysis_row_count"),
+        "original_row_count": entry.get("original_row_count"),
     }

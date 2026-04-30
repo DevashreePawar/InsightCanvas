@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 
+from app.config import MAX_CHART_ROWS
 from app.services.ai_service import interpret_question
 from app.services.profile_service import profile_dataset
 from app.services.quality_service import identifier_prompt_warning, selected_identifier_warning, sensitive_prompt_warning
@@ -218,6 +219,8 @@ def _numeric_columns_for_heatmap(df, profile: dict) -> list[str]:
 
 
 def _build_heatmap(df, profile: dict, recommendation: dict, question: str):
+    if len(df) > MAX_CHART_ROWS:
+        df = df.sample(n=MAX_CHART_ROWS, random_state=7)
     numeric_columns = _numeric_columns_for_heatmap(df, profile)
     if len(numeric_columns) < 2:
         return None, "A correlation heatmap needs at least two non-identifier numeric columns."
@@ -233,6 +236,13 @@ def _build_heatmap(df, profile: dict, recommendation: dict, question: str):
     fig.update_layout(autosize=True, margin=dict(l=24, r=24, t=64, b=24), paper_bgcolor="white", plot_bgcolor="white")
     fig.layout.template = None
     return fig, None
+
+
+def _limit_chart_dataframe(df):
+    if len(df) <= MAX_CHART_ROWS:
+        return df, None
+    sampled = df.sample(n=MAX_CHART_ROWS, random_state=7).copy()
+    return sampled, f"Chart rendering used a {MAX_CHART_ROWS:,}-row sample for performance."
 
 
 def _build_heatmap_insight(df, profile: dict, target: str | None) -> str:
@@ -324,6 +334,9 @@ def generate_chart(
     plotted_x = x_axis or ("metric" if "metric" in chart_df.columns else x_axis)
     plotted_x, plotted_y = _safe_axes(chart_type, plotted_x, plotted_y, chart_df)
     chart_df = _drop_missing_chart_fields(chart_df, plotted_x, plotted_y)
+    chart_df, chart_limit_warning = _limit_chart_dataframe(chart_df)
+    if chart_limit_warning:
+        data_quality_warnings.append(chart_limit_warning)
     if chart_df.empty:
         warning = "No usable rows remained after cleaning missing or invalid values for the selected fields."
         return {

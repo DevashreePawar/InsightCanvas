@@ -161,6 +161,16 @@ def detect_identifier_columns(df: pd.DataFrame, unique_counts: dict) -> list[str
 
 def build_data_quality_warnings(profile: dict) -> list[str]:
     warnings = []
+    metadata = profile.get("dataset_metadata", {})
+    if metadata.get("analysis_limited"):
+        analysis_rows = metadata.get("analysis_row_count")
+        original_rows = metadata.get("original_row_count")
+        if original_rows and analysis_rows:
+            warnings.append(
+                f"Large dataset handling is active: this analysis used the first {analysis_rows:,} rows out of at least {original_rows:,} rows to stay responsive."
+            )
+        elif analysis_rows:
+            warnings.append(f"Large dataset handling is active: this analysis used the first {analysis_rows:,} rows to stay responsive.")
     sensitive_columns = profile.get("sensitive_columns", {})
     if sensitive_columns:
         warnings.append(
@@ -182,7 +192,7 @@ def build_data_quality_warnings(profile: dict) -> list[str]:
     multi_value = profile.get("multi_value_columns", [])
     if multi_value:
         warnings.append(f"Multi-value categorical columns detected: {', '.join(multi_value[:5])}. The agent can split these for grouped analysis.")
-    return warnings[:4]
+    return warnings[:5]
 
 
 def clean_json(value: Any):
