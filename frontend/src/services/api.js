@@ -1,4 +1,9 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const DEPLOYED_API_BASE = 'https://insightcanvas-api.onrender.com/api';
+const LOCAL_API_BASE = 'http://localhost:8000/api';
+const isLocalHost =
+  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || (isLocalHost ? LOCAL_API_BASE : DEPLOYED_API_BASE);
 
 async function request(path, options = {}) {
   const headers = new Headers(options.headers || {});
