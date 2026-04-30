@@ -99,7 +99,8 @@ def infer_logical_types(
         elif column in multi_value_columns:
             logical_types[column] = "multi_value_categorical"
         elif pd.api.types.is_numeric_dtype(df[column]):
-            logical_types[column] = "categorical_numeric" if unique_count <= min(20, max(10, row_count * 0.05)) else "numeric"
+            low_cardinality_numeric = (unique_count <= 20 and unique_ratio <= 0.3) or (row_count >= 10 and unique_count <= 5)
+            logical_types[column] = "categorical_numeric" if low_cardinality_numeric else "numeric"
         elif unique_ratio > 0.6 and unique_count > 30:
             logical_types[column] = "text"
         else:

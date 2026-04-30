@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import FRONTEND_ORIGIN
 from app.database import init_db
-from app.routes import auth, charts, datasets, reports, sessions
+from app.routes import analysis, auth, charts, datasets, reports, sessions
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,6 +33,7 @@ def health():
 
 app.include_router(auth.router, prefix="/api")
 app.include_router(datasets.router, prefix="/api")
+app.include_router(analysis.router, prefix="/api")
 app.include_router(charts.router, prefix="/api")
 app.include_router(sessions.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")

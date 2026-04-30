@@ -14,8 +14,8 @@ export default function WorkspacePreview() {
         <div className="pastel-card p-6">
           <div className="rounded-3xl border border-dashed border-[#D9B8A8] bg-[#FFF8F1] p-6 text-center">
             <FileUp className="mx-auto h-8 w-8 text-[#B96B55]" />
-            <p className="mt-3 font-black text-[#322B2B]">Drop your CSV here, or choose a file</p>
-            <p className="mt-2 text-sm leading-6 text-[#7A6F6A]">The app will read the columns, flag sensitive fields, and suggest a few useful questions.</p>
+            <p className="mt-3 font-black text-[#322B2B]">Drop your data file here, or choose a file</p>
+            <p className="mt-2 text-sm leading-6 text-[#7A6F6A]">CSV, Excel, or JSON. The app will read the columns, flag sensitive fields, and suggest a few useful questions.</p>
           </div>
           <div className="mt-5 rounded-3xl border border-[#EBDDD3] bg-white p-5">
             <div className="flex items-center gap-2 text-sm font-bold text-[#8B5E4A]">

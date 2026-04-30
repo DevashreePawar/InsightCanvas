@@ -38,6 +38,11 @@ async function request(path, options = {}) {
 export const api = {
   signup: (payload) => request('/auth/signup', { method: 'POST', body: JSON.stringify(payload) }),
   login: (payload) => request('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  uploadFile: (file) => {
+    const form = new FormData();
+    form.append('file', file);
+    return request('/datasets/upload', { method: 'POST', body: form });
+  },
   uploadCsv: (file) => {
     const form = new FormData();
     form.append('file', file);
@@ -45,6 +50,7 @@ export const api = {
   },
   loadSample: (name) => request(`/datasets/sample/${name}`, { method: 'POST' }),
   generateChart: (payload) => request('/charts/generate', { method: 'POST', body: JSON.stringify(payload) }),
+  runAnalysis: (payload) => request('/analysis/run', { method: 'POST', body: JSON.stringify(payload) }),
   listSessions: () => request('/sessions'),
   getSession: (id) => request(`/sessions/${id}`),
   deleteSession: (id) => request(`/sessions/${id}`, { method: 'DELETE' }),

@@ -23,6 +23,10 @@ class ChartRequest(QuestionRequest):
     title: Optional[str] = None
 
 
+class AnalysisRequest(ChartRequest):
+    mode: str = Field(default="quick", pattern="^(quick|dashboard)$")
+
+
 class Interpretation(BaseModel):
     intent: str
     x_axis: Optional[str] = None

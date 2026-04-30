@@ -8,6 +8,7 @@ from openai import OpenAI
 from pydantic import BaseModel, Field
 
 from app.config import OPENAI_API_KEY, OPENAI_MODEL
+from app.services.langchain_agent_service import interpret_with_langchain, suggest_questions_with_langchain
 
 logger = logging.getLogger(__name__)
 
@@ -320,6 +321,10 @@ def suggest_questions(profile: dict) -> list[str]:
     if not OPENAI_API_KEY:
         return mock_suggest_questions(profile)
 
+    langchain_questions = suggest_questions_with_langchain(profile)
+    if langchain_questions:
+        return langchain_questions
+
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)
         response = client.beta.chat.completions.parse(
@@ -608,6 +613,10 @@ def interpret_question(question: str, profile: dict, rag_context: list[dict] | N
     profile = {**profile, "semantic_schema": profile.get("semantic_schema") or build_semantic_schema(profile)}
     if not OPENAI_API_KEY:
         return mock_interpret_question(question, profile, rag_context)
+
+    langchain_plan = interpret_with_langchain(question, profile, rag_context, VALID_CHART_TYPES, VALID_AGGREGATIONS)
+    if langchain_plan:
+        return _validated_plan(langchain_plan, profile, question)
 
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)

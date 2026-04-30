@@ -254,10 +254,16 @@ def _build_heatmap_insight(df, profile: dict, target: str | None) -> str:
     return "The heatmap compares numeric columns to show which variables move together most strongly."
 
 
-def generate_chart(df, question: str, metadata: dict | None = None, rag_context: list[dict] | None = None) -> dict:
+def generate_chart(
+    df,
+    question: str,
+    metadata: dict | None = None,
+    rag_context: list[dict] | None = None,
+    interpretation_override: dict | None = None,
+) -> dict:
     df = _preprocess_dataframe(df)
     profile = profile_dataset(df, metadata)
-    interpretation = interpret_question(question, profile, rag_context)
+    interpretation = interpretation_override or interpret_question(question, profile, rag_context)
     recommendation = recommend_chart(question, profile, interpretation, rag_context)
     data_quality_warnings = list(profile.get("data_quality_warnings", []))
     identifier_warning = (
