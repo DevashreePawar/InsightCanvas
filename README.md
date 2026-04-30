@@ -100,6 +100,41 @@ If your backend runs somewhere else, create `frontend/.env`:
 VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
+## Free Deployment
+
+Recommended free hosting:
+
+- **Backend:** Render free web service using `render.yaml`
+- **Frontend:** Vercel free React/Vite deployment using `frontend/vercel.json`
+
+Deploy order:
+
+1. Deploy the backend first from this GitHub repo on Render.
+   - Blueprint file: `render.yaml`
+   - Root directory: `backend`
+   - Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+2. Add backend env vars in Render:
+
+```text
+OPENAI_API_KEY=your-openai-key
+OPENAI_MODEL=gpt-4o-mini
+USE_LANGCHAIN=true
+MAX_UPLOAD_BYTES=104857600
+FRONTEND_ORIGIN=https://your-vercel-url.vercel.app
+```
+
+3. Deploy the frontend on Vercel.
+   - Root directory: `frontend`
+   - Build command: `npm run build`
+   - Output directory: `dist`
+4. Add frontend env var in Vercel:
+
+```text
+VITE_API_BASE_URL=https://your-render-backend-url.onrender.com/api
+```
+
+Render free services may sleep after inactivity, so the first backend request can take a little longer.
+
 ## API Endpoints
 
 - `POST /api/datasets/upload`
