@@ -1,14 +1,14 @@
 import SectionHeader from './SectionHeader';
 
-const technologies = ['Works with your CSV', 'Chooses readable charts', 'Explains the pattern', 'Handles messy values', 'Flags sensitive fields', 'Saves useful sessions'];
+const technologies = ['Reads common data files', 'Chooses readable views', 'Explains what changed', 'Handles messy values', 'Flags sensitive fields', 'Keeps useful sessions'];
 
 export default function TechStack() {
   return (
     <section id="features" className="bg-[#FFF1E6] px-6 py-20 lg:px-8">
       <SectionHeader
         eyebrow="Features"
-        title="A friendly workspace for practical analysis"
-        description="It is designed for the ordinary questions that come up when you first open a dataset."
+        title="Practical analysis, gently presented"
+        description="Built for the ordinary questions that come up when you first open a dataset, with just enough structure to keep the work honest."
       />
       <div className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {technologies.map((tech) => (

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { FileUp, Loader2, Save, Sparkles } from 'lucide-react';
 import DashboardGrid from '../components/DashboardGrid';
 import DataQualityReportPanel from '../components/DataQualityReportPanel';
+import ExportPanel from '../components/ExportPanel';
 import InsightSummaryPanel from '../components/InsightSummaryPanel';
 import ProfilePanel from '../components/ProfilePanel';
 import StatisticalSummaryPanel from '../components/StatisticalSummaryPanel';
+import { brand } from '../brand';
 import { api } from '../services/api';
 import { generateQuestionOptions } from '../utils/questionSuggestions';
 
@@ -76,9 +78,9 @@ export default function DashboardPage() {
       <aside className="space-y-6">
         <section className="pastel-card p-6">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#F9735B]">Workspace</p>
-          <h1 className="mt-2 text-2xl font-black text-[#322B2B]">Explore with InsightCanvas</h1>
+          <h1 className="mt-2 text-2xl font-black text-[#322B2B]">{brand.promise}</h1>
           <p className="mt-2 text-sm leading-6 text-[#7A6F6A]">
-            Upload a dataset and ask what you’re curious about.
+            Bring a file, ask what you are curious about, and let the workspace shape a readable first pass.
           </p>
           {dataset?.metadata ? (
             <p className="mt-3 rounded-2xl bg-[#FFF8F1] p-3 text-xs font-bold text-[#8B5E4A]">
@@ -96,7 +98,7 @@ export default function DashboardPage() {
           <label className="mt-5 block rounded-3xl border border-dashed border-[#F9735B]/40 bg-[#FFF4EA] p-5 text-center transition hover:border-[#F9735B] hover:bg-[#FFE7D6]">
             <FileUp className="mx-auto h-8 w-8 text-[#F9735B]" />
             <span className="mt-2 block font-bold text-[#5D4A44]">Drop your data file here, or choose a file</span>
-            <span className="mt-1 block text-xs font-semibold text-[#8A7A72]">CSV, Excel, or JSON. I’ll read the columns and suggest a few starting questions.</span>
+            <span className="mt-1 block text-xs font-semibold text-[#8A7A72]">CSV, Excel, or JSON. InsightCanvas will read the fields and suggest a few starting questions.</span>
             <input
               type="file"
               accept=".csv,text/csv,.xlsx,.xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.json,application/json"
@@ -128,7 +130,7 @@ export default function DashboardPage() {
             ))}
           </div>
           <label className="block">
-            <span className="text-sm font-bold text-[#5D4A44]">What would you like to understand?</span>
+            <span className="text-sm font-bold text-[#5D4A44]">What would you like to understand first?</span>
             <textarea
               value={question}
               onChange={(event) => setQuestion(event.target.value)}
@@ -165,6 +167,7 @@ export default function DashboardPage() {
           {busyMessage ? <p className="mt-4 rounded-2xl bg-[#FFF8F1] p-3 text-sm font-semibold text-[#6B4A35]">{busyMessage}</p> : null}
         </div>
         <InsightSummaryPanel summary={result?.summary} followUps={result?.follow_up_questions} onSelectQuestion={setQuestion} />
+        <ExportPanel dataset={dataset} question={question} result={result} />
         <DataQualityReportPanel report={result?.quality_report} />
         <StatisticalSummaryPanel summary={result?.statistical_summary} />
         <DashboardGrid charts={result?.charts || []} />

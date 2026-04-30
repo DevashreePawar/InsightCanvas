@@ -23,10 +23,18 @@ def init_db():
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               email TEXT UNIQUE NOT NULL,
               password_hash TEXT NOT NULL,
+              auth_provider TEXT DEFAULT 'local',
+              google_sub TEXT UNIQUE,
               created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
+        existing_columns = {row["name"] for row in db.execute("PRAGMA table_info(users)").fetchall()}
+        if "auth_provider" not in existing_columns:
+            db.execute("ALTER TABLE users ADD COLUMN auth_provider TEXT DEFAULT 'local'")
+        if "google_sub" not in existing_columns:
+            db.execute("ALTER TABLE users ADD COLUMN google_sub TEXT")
+        db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub)")
         db.execute(
             """
             CREATE TABLE IF NOT EXISTS sessions (

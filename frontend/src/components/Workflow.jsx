@@ -4,18 +4,18 @@ import SectionHeader from './SectionHeader';
 const steps = [
   {
     icon: Database,
-    title: 'Upload your dataset',
-    text: 'Start with any CSV. InsightCanvas checks the columns, missing values, and useful field types.',
+    title: 'Bring a table',
+    text: 'Start with CSV, Excel, or JSON. InsightCanvas checks the fields, missing values, and useful column types.',
   },
   {
     icon: MessageSquareText,
-    title: 'Ask a question',
+    title: 'Ask naturally',
     text: 'Type what you are curious about, like a trend, comparison, ranking, or outlier.',
   },
   {
     icon: BarChart3,
-    title: 'See the pattern',
-    text: 'Get a chart with a short explanation so the result is easier to interpret.',
+    title: 'Read the pattern',
+    text: 'Get charts, quality notes, and a short explanation so the result is easier to interpret.',
   },
 ];
 
@@ -24,8 +24,8 @@ export default function Workflow() {
     <section id="workflow" className="bg-[#FFF8F1] px-6 py-20 lg:px-8">
       <SectionHeader
         eyebrow="How it works"
-        title="Three simple steps from CSV to clarity"
-        description="InsightCanvas keeps the workflow small and practical: bring your data, ask naturally, and read the pattern."
+        title="From table to takeaway"
+        description="The workflow is intentionally small: bring your data, ask naturally, and read the pattern without changing tools."
       />
       <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">
         {steps.map((step, index) => {

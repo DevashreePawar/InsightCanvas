@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 :root {
+  --canvas-cream: #fff8f1;
+  --canvas-paper: #fffdf9;
+  --canvas-peach: #f3c7b8;
+  --canvas-coral: #d9654f;
+  --canvas-ink: #322b2b;
+  --canvas-muted: #7a6f6a;
   color: #322b2b;
   background: #fff8f1;
   font-synthesis: none;

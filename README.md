@@ -6,7 +6,7 @@ The goal is not to generate charts in bulk. It is to help people ask better ques
 
 ## Features
 
-- React + Tailwind frontend with a warm landing page, protected workspace, auth pages, saved sessions, and shared dashboard view
+- React + Tailwind frontend with a warm landing page, no-login workspace, saved sessions, and shared dashboard view
 - FastAPI backend with API routes for dataset upload, profiling, question interpretation, chart recommendation, dashboard analysis, report export, and saved sessions
 - Secure CSV, Excel, and JSON handling with file type checks, size limits, sanitized filenames, temporary upload storage, and backend validation
 - Dataset-agnostic Pandas profiling for row count, column count, data types, logical types, missing values, unique counts, likely ID columns, multi-value categorical columns, numeric summaries, categorical summaries, date detection, and preview rows
@@ -17,8 +17,9 @@ The goal is not to generate charts in bulk. It is to help people ask better ques
 - Built-in EDA analyst layer with data quality scoring, duplicate checks, missing-value flags, outlier detection, statistical distribution summaries, correlation scanning, category balance checks, and grouped comparison highlights
 - Data quality guardrails that detect likely ID columns such as `PassengerId` or `anime_id` and avoid misleading identifier distributions
 - Plotly chart generation for line, bar, scatter, histogram, pie, box, and correlation heatmap paths
+- Export tools for downloadable HTML reports, dashboard JSON, browser PDF/print output, and individual chart PNG/JSON files
 - Reasoning notes, preprocessing steps, suggested alternatives, and data quality warnings returned with each analysis
-- Lightweight local auth using HMAC-signed bearer tokens and SQLite users
+- No-login demo flow that opens directly into the dashboard, with saved sessions attached to a local demo user
 - Saved analysis sessions with shareable read-only links
 - HTML and MVP PDF report export
 
@@ -101,8 +102,6 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 ## API Endpoints
 
-- `POST /api/auth/signup`
-- `POST /api/auth/login`
 - `POST /api/datasets/upload`
 - `POST /api/datasets/sample/{name}`
 - `POST /api/datasets/profile`
@@ -122,12 +121,13 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 1. Start the backend on port `8000`.
 2. Start the frontend with `npm run dev`.
-3. Sign up with a local demo account.
+3. Open the dashboard. No signup or login is required.
 4. Load a sample dataset or upload a CSV.
 5. Choose Quick Insight or Full Dashboard mode.
 6. Ask a question such as `Show survival rate by gender`, `Compare ratings across anime types`, or `What factors seem related to happiness score?`.
 7. Generate a chart or mini dashboard, review the profile, reasoning notes, warnings, and insight, then save the session.
-8. Open Saved Sessions to export an HTML/PDF report or use the share link.
+8. Export the current dashboard as HTML, JSON, browser PDF/print output, or individual chart images.
+9. Open Saved Sessions to export an HTML/PDF report or use the share link.
 
 ## Example Questions
 
@@ -169,7 +169,7 @@ This keeps the app from behaving like a single-chart generator. It gives recruit
 ## Privacy And Data Handling
 
 - Uploaded CSV, Excel, and JSON files are stored locally in `backend/uploads/`.
-- Local demo users and saved sessions are stored in SQLite at `backend/app.db`.
+- The local demo user and saved sessions are stored in SQLite at `backend/app.db`.
 - `.env`, local uploads, local database files, `node_modules`, and build artifacts are ignored by Git.
 - Email, phone, and name-like columns are detected as sensitive, redacted from previews/RAG/LLM context, and blocked from visualization axes.
 
@@ -185,7 +185,7 @@ Add screenshots here before submitting to Handshake:
 
 ## Future Improvements
 
-- Add production OAuth or hosted auth
+- Add production OAuth or hosted auth if the app becomes multi-user
 - Add background jobs for large CSV uploads
 - Add richer LLM-based filtering and transformation plans
 - Add a vector database for larger RAG indexes

@@ -12,7 +12,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.config import SECRET_KEY
 from app.database import get_db
 
-auth_scheme = HTTPBearer()
+auth_scheme = HTTPBearer(auto_error=False)
+DEMO_EMAIL = "demo@insightcanvas.local"
 
 
 def hash_password(password: str) -> str:
@@ -50,7 +51,24 @@ def decode_token(token: str) -> Dict[str, Any]:
         raise HTTPException(status_code=401, detail="Invalid or expired token") from exc
 
 
-def current_user(credentials: HTTPAuthorizationCredentials = Depends(auth_scheme)):
+def _demo_user() -> Dict[str, Any]:
+    with get_db() as db:
+        row = db.execute("SELECT id, email FROM users WHERE email = ?", (DEMO_EMAIL,)).fetchone()
+        if not row:
+            cursor = db.execute(
+                """
+                INSERT INTO users (email, password_hash, auth_provider)
+                VALUES (?, ?, ?)
+                """,
+                (DEMO_EMAIL, "DEMO_NO_LOGIN", "demo"),
+            )
+            return {"id": cursor.lastrowid, "email": DEMO_EMAIL, "auth_provider": "demo"}
+    return {"id": row["id"], "email": row["email"], "auth_provider": "demo"}
+
+
+def current_user(credentials: HTTPAuthorizationCredentials | None = Depends(auth_scheme)):
+    if credentials is None or not hasattr(credentials, "credentials"):
+        return _demo_user()
     payload = decode_token(credentials.credentials)
     with get_db() as db:
         user = db.execute("SELECT id, email FROM users WHERE id = ?", (payload["sub"],)).fetchone()
