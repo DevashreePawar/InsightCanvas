@@ -40,4 +40,6 @@ export const api = {
   deleteSession: (id) => request(`/sessions/${id}`, { method: 'DELETE' }),
   getSharedSession: (shareId) => request(`/sessions/shared/${shareId}/public`),
   exportReport: (payload) => request('/reports/export', { method: 'POST', body: JSON.stringify(payload) }),
+  trackEvent: (payload) => request('/analytics/event', { method: 'POST', body: JSON.stringify(payload) }),
+  getAnalyticsSummary: (days = 30) => request(`/analytics/summary?days=${days}`),
 };

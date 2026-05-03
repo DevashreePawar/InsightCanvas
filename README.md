@@ -18,6 +18,7 @@ The goal is not to generate charts in bulk. It is to help people ask better ques
 - Data quality guardrails that detect likely ID columns such as `PassengerId` or `anime_id` and avoid misleading identifier distributions
 - Plotly chart generation for line, bar, scatter, histogram, pie, box, and correlation heatmap paths
 - Export tools for downloadable HTML reports, dashboard JSON, browser PDF/print output, and individual chart PNG/JSON files
+- Anonymous usage analytics for dashboard visits, uploads, analysis runs, report exports, and saved-session views
 - Reasoning notes, preprocessing steps, suggested alternatives, and data quality warnings returned with each analysis
 - No-login demo flow that opens directly into the dashboard, with saved sessions attached to a local demo user
 - Saved analysis sessions with shareable read-only links
@@ -157,6 +158,8 @@ Render free services may sleep after inactivity, so the first backend request ca
 - `DELETE /api/sessions/{session_id}`
 - `GET /api/sessions/shared/{share_id}/public`
 - `POST /api/reports/export`
+- `POST /api/analytics/event`
+- `GET /api/analytics/summary`
 
 ## Demo Workflow
 
@@ -213,8 +216,10 @@ This keeps the app from behaving like a single-chart generator. It gives recruit
 
 - Uploaded CSV, Excel, and JSON files are stored locally in `backend/uploads/`.
 - The local demo user and saved sessions are stored in SQLite at `backend/app.db`.
+- Anonymous analytics events are stored in SQLite and only include event names, page paths, timestamps, visitor IDs, and safe metadata such as file type or chart count.
 - `.env`, local uploads, local database files, `node_modules`, and build artifacts are ignored by Git.
 - Email, phone, and name-like columns are detected as sensitive, redacted from previews/RAG/LLM context, and blocked from visualization axes.
+- Analytics does not store uploaded file contents, natural-language prompt text, names, emails, or dataset values.
 
 ## Screenshots
 
@@ -224,6 +229,7 @@ Add screenshots here before submitting to Handshake:
 - Analysis dashboard with generated chart
 - Dataset profile panel
 - Saved sessions page
+- Usage analytics page
 - Shared dashboard view
 
 ## Future Improvements

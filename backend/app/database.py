@@ -66,3 +66,17 @@ def init_db():
             """
         )
         db.execute("CREATE INDEX IF NOT EXISTS idx_rag_chunks_dataset ON rag_chunks(dataset_id)")
+        db.execute(
+            """
+            CREATE TABLE IF NOT EXISTS analytics_events (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              visitor_id TEXT NOT NULL,
+              event_name TEXT NOT NULL,
+              page TEXT,
+              metadata TEXT,
+              created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        db.execute("CREATE INDEX IF NOT EXISTS idx_analytics_events_name ON analytics_events(event_name)")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_analytics_events_created ON analytics_events(created_at)")

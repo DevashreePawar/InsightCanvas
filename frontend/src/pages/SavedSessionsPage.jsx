@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ExternalLink, FileDown, Trash2 } from 'lucide-react';
 import ChartViewer from '../components/ChartViewer';
 import { api } from '../services/api';
+import { trackEvent } from '../utils/analytics';
 import { downloadBlob, parseFigure } from '../utils/plotly';
 
 export default function SavedSessionsPage() {
@@ -28,6 +29,7 @@ export default function SavedSessionsPage() {
     if (!active) return;
     const blob = await api.exportReport({ session_id: active.id, format });
     downloadBlob(blob, `${active.title}.${format}`);
+    trackEvent('report_exported', { format });
   };
 
   const activeResult = active

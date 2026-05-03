@@ -16,6 +16,9 @@ export default function AppShell() {
             <NavLink to="/sessions" className={({ isActive }) => (isActive ? 'text-[#F9735B]' : 'text-[#7A6F6A] hover:text-[#F9735B]')}>
               Saved work
             </NavLink>
+            <NavLink to="/usage" className={({ isActive }) => (isActive ? 'text-[#F9735B]' : 'text-[#7A6F6A] hover:text-[#F9735B]')}>
+              Usage
+            </NavLink>
           </div>
         </nav>
       </header>

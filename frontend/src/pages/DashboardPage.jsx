@@ -8,6 +8,7 @@ import ProfilePanel from '../components/ProfilePanel';
 import StatisticalSummaryPanel from '../components/StatisticalSummaryPanel';
 import { brand } from '../brand';
 import { api } from '../services/api';
+import { trackEvent } from '../utils/analytics';
 import { generateQuestionOptions } from '../utils/questionSuggestions';
 
 const sampleOptions = [
@@ -46,15 +47,22 @@ export default function DashboardPage() {
       setResult(null);
       setQuestion((response.suggested_questions?.length ? response.suggested_questions : generateQuestionOptions(response.profile))[0]);
       setMessage(`Loaded ${response.metadata.filename}`);
+      trackEvent('sample_dataset_loaded', { source: 'sample', file_type: response.metadata.file_type || 'csv' });
     });
 
   const uploadFile = (file) =>
     run(async () => {
-      const response = await api.uploadFile(file);
-      setDataset(response);
-      setResult(null);
-      setQuestion((response.suggested_questions?.length ? response.suggested_questions : generateQuestionOptions(response.profile))[0]);
-      setMessage(`Uploaded ${response.metadata.filename}`);
+      try {
+        const response = await api.uploadFile(file);
+        setDataset(response);
+        setResult(null);
+        setQuestion((response.suggested_questions?.length ? response.suggested_questions : generateQuestionOptions(response.profile))[0]);
+        setMessage(`Uploaded ${response.metadata.filename}`);
+        trackEvent('dataset_uploaded', { source: 'upload', file_type: response.metadata.file_type || 'unknown', status: 'success' });
+      } catch (err) {
+        trackEvent('dataset_upload_failed', { status: 'failed', error_type: err.message.includes('large') ? 'file_size' : 'upload_error' });
+        throw err;
+      }
     });
 
   const analyze = (saveSession = false) =>
@@ -69,6 +77,11 @@ export default function DashboardPage() {
       });
       setResult(response);
       setMessage(saveSession ? 'Analysis generated and saved.' : 'Analysis generated.');
+      trackEvent(saveSession ? 'analysis_saved' : 'analysis_run', {
+        mode,
+        chart_count: response.charts?.length || 0,
+        status: 'success',
+      });
     });
 
   const busyMessage = loading && !dataset ? 'Reading your dataset...' : loading ? (mode === 'dashboard' ? 'Building a small dashboard...' : 'Working through your question...') : message;

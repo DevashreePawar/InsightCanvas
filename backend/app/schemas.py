@@ -53,3 +53,10 @@ class SaveSessionRequest(BaseModel):
 class ExportReportRequest(BaseModel):
     session_id: str
     format: str = Field(pattern="^(html|pdf)$")
+
+
+class AnalyticsEventRequest(BaseModel):
+    visitor_id: str = Field(min_length=8, max_length=80)
+    event_name: str = Field(min_length=2, max_length=80, pattern=r"^[a-z0-9_]+$")
+    page: Optional[str] = Field(default=None, max_length=120)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
